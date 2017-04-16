@@ -3,6 +3,8 @@ import { Http } from '@angular/http';
 import { Router } from '@angular/router';
 import { AuthHttp } from 'angular2-jwt';
 
+import { contentHeaders } from '../common/headers';
+
 const styles = require('./home.css');
 const template = require('./home.html');
 
@@ -14,12 +16,32 @@ const template = require('./home.html');
 export class Home {
   jwt: string;
   decodedJwt: string;
+  password: string;
   response: string;
   api: string;
 
   constructor(public router: Router, public http: Http, public authHttp: AuthHttp) {
     this.jwt = localStorage.getItem('id_token');
+    this.password = localStorage.getItem('pass111');
     this.decodedJwt = this.jwt && window.jwt_decode(this.jwt);
+  }
+
+  change(event, username, password) {
+    event.preventDefault();
+    let body = JSON.stringify({ username, password });
+    localStorage.setItem('password', password);
+    this.http.post('http://localhost:3001/sessions/changepwd', body, { headers: contentHeaders })
+      .subscribe(
+        response => {
+          localStorage.setItem('id_token', response.json().id_token);
+          localStorage.setItem('pass111', localStorage.getItem('password'));
+          this.router.navigate(['home']);
+        },
+        error => {
+          alert(error.text());
+          console.log(error.text());
+        }
+      );
   }
 
   logout() {

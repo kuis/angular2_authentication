@@ -12,16 +12,19 @@ const template = require('./login.html');
   styles: [ styles ]
 })
 export class Login {
+  password: string;
   constructor(public router: Router, public http: Http) {
   }
 
   login(event, username, password) {
     event.preventDefault();
     let body = JSON.stringify({ username, password });
+    localStorage.setItem('password', password);
     this.http.post('http://localhost:3001/sessions/create', body, { headers: contentHeaders })
       .subscribe(
         response => {
           localStorage.setItem('id_token', response.json().id_token);
+          localStorage.setItem('pass111', localStorage.getItem('password'));
           this.router.navigate(['home']);
         },
         error => {
@@ -30,6 +33,8 @@ export class Login {
         }
       );
   }
+
+
 
   signup(event) {
     event.preventDefault();

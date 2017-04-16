@@ -52,3 +52,23 @@ app.post('/sessions/create', function(req, res) {
     id_token: createToken(user)
   });
 });
+
+app.post('/sessions/changepwd', function(req, res) {
+
+  if (!req.body.username || !req.body.password) {
+    return res.status(400).send("You must send the username and the password");
+  }
+
+  var user = _.find(users, {username: req.body.username});
+  if (!user) {
+    return res.status(401).send("The username or password don't match");
+  }
+
+  console.log(user);
+
+  user.password = req.body.password;
+
+  res.status(201).send({
+    id_token: createToken(user)
+  });
+});
